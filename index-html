@@ -4,161 +4,166 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Drive</title>
+<title>Driver Trip Log</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#f3f5f9;color:#172033;font-family:Arial,sans-serif}
-header{background:#142b4a;color:white;padding:22px 18px;border-radius:0 0 22px 22px}
-header h1{margin:0;font-size:27px}header p{margin:7px 0 0;color:#c7d6e8}
-nav{display:flex;gap:7px;padding:12px;background:white;position:sticky;top:0}
-nav button{flex:1;border:0;border-radius:10px;padding:12px 4px;background:#edf1f7;color:#30415a;font-weight:bold}
-nav button.active{background:#1769e0;color:white}
-main{padding:14px;max-width:650px;margin:auto}
-.card{background:white;border-radius:15px;padding:17px;margin-bottom:14px;box-shadow:0 3px 12px #142b4a0c}
-h2{font-size:18px;margin:0 0 15px}
-label{display:block;font-size:13px;color:#526176;margin:12px 0 6px}
-input{width:100%;padding:12px;border:1px solid #d9e0ea;border-radius:9px;font-size:16px;background:#fff;color:#172033}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.btn{width:100%;border:0;border-radius:10px;padding:13px;margin-top:14px;background:#1769e0;color:white;font-weight:bold;font-size:15px}
-.btn.red{background:#b42332}.btn.light{background:#eaf1fc;color:#1769e0}
-.stat{background:#eaf1fc;border-radius:12px;padding:14px}
-.stat small{color:#526176}.stat strong{display:block;font-size:22px;margin-top:7px}
-.entry{border:1px solid #e1e6ee;padding:12px;border-radius:10px;margin-top:10px;overflow-wrap:anywhere}
-.muted{color:#69778c;font-size:13px}
-.hidden{display:none}
+body{margin:0;background:#f2f5fa;color:#172b4d;font-family:Arial,sans-serif}
+header{background:#142b4a;color:white;padding:22px 17px}
+header h2{margin:0 0 6px}
+header p{margin:0;font-size:13px;color:#d9e5f6}
+nav{display:flex;background:white;position:sticky;top:0}
+nav button{flex:1;padding:15px 2px;border:0;background:white;color:#526079;font-weight:bold;font-size:12px}
+nav button.active{color:#2463eb;border-bottom:3px solid #2463eb}
+main{max-width:620px;margin:auto;padding:13px}
+.panel{display:none}.panel.active{display:block}
+.card{background:white;border-radius:14px;padding:16px;margin-bottom:13px;box-shadow:0 2px 9px #0001}
+h3{margin:0 0 14px}
+label{display:block;font-size:13px;font-weight:bold;margin:12px 0 6px}
+input{width:100%;padding:12px;border:1px solid #d7deea;border-radius:9px;font-size:16px;background:white}
+.btn{width:100%;padding:13px;border:0;border-radius:9px;margin-top:12px;background:#2463eb;color:white;font-weight:bold;font-size:15px}
+.green{background:#13835c}.red{background:#c83c3c}.gray{background:#e8edf5;color:#172b4d}
+.row,.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{padding:14px;background:#edf3ff;border-radius:10px}
+.stat small{display:block;color:#596781;font-size:12px}
+.stat strong{display:block;font-size:21px;margin-top:8px;overflow-wrap:anywhere}
+.item{border:1px solid #e1e6ef;border-radius:10px;padding:12px;margin-top:10px;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+.muted{font-size:12px;color:#667085;line-height:1.5}
 </style>
 </head>
 <body>
 <header>
-<h1>Drive</h1>
-<p>Your trips, fuel and monthly reports</p>
+<h2>🚘 Driver Trip Log</h2>
+<p>Trips • Fuel • Monthly Reports</p>
 </header>
 <nav>
-<button class="active" data-tab="km">Kilometers Log</button>
-<button data-tab="fuel">Fuel Log</button>
-<button data-tab="reports">Reports</button>
+<button class="active" onclick="tab('km',this)">Kilometers</button>
+<button onclick="tab('fuel',this)">Fuel Log</button>
+<button onclick="tab('reports',this)">Reports</button>
 </nav>
 <main>
-<section id="km">
+<section id="km" class="panel active">
 <div class="card">
-<h2>Driver & Vehicle Details</h2>
-<label>Driver name</label><input id="driver" placeholder="Driver name">
-<label>Car name / model</label><input id="car" placeholder="e.g. Toyota Yaris">
-<label>Plate number</label><input id="plate" placeholder="Vehicle plate number">
-<button class="btn" onclick="saveDetails()">Save Details</button>
+<h3>Start / End Trip</h3>
+<label>Date</label><input id="td" type="date">
+<label>Start KM</label><input id="sk" type="number" min="0" placeholder="Starting odometer">
+<button id="sb" class="btn green" onclick="start()">Start Trip</button>
+<label>End KM</label><input id="ek" type="number" min="0" placeholder="Ending odometer">
+<button id="eb" class="btn" onclick="end()">End Trip & Save</button>
+<p id="status" class="muted">No active trip.</p>
 </div>
-<div class="card">
-<h2>New Kilometer Log</h2>
-<label>Trip date</label><input id="tripDate" type="date">
-<div class="grid">
-<div><label>Start Odometer (KM)</label><input id="startKm" type="number" min="0" placeholder="Start KM"></div>
-<div><label>Start Time</label><input id="startTime" type="time"></div>
-<div><label>End Odometer (KM)</label><input id="endKm" type="number" min="0" placeholder="End KM"></div>
-<div><label>End Time</label><input id="endTime" type="time"></div>
-</div>
-<button class="btn" onclick="saveTrip()">Save Kilometer Log</button>
-<p class="muted">Enter the date, odometer readings and times manually.</p>
-</div>
-<div class="card"><h2>Recent Kilometer Logs</h2><div id="tripList"></div></div>
+<div class="card"><h3>Trip History</h3><div id="trips"></div></div>
 </section>
 
-<section id="fuel" class="hidden">
+<section id="fuel" class="panel">
 <div class="card">
-<h2>Add Fuel Entry</h2>
-<label>Fuel date</label><input id="fuelDate" type="date">
-<label>Fuel entry time</label><input id="fuelTime" type="time">
-<label>Odometer (KM)</label><input id="fuelKm" type="number" min="0" placeholder="Current KM">
-<label>Amount paid (QAR)</label><input id="fuelAmount" type="number" min="0" step="0.01" placeholder="0.00">
-<button class="btn" onclick="saveFuel()">Save Fuel Entry</button>
+<h3>Add Fuel Entry</h3>
+<label>Date</label><input id="fd" type="date">
+<label>Time</label><input id="ft" type="time">
+<label>Odometer KM</label><input id="fk" type="number" min="0">
+<label>Amount (QAR)</label><input id="fa" type="number" min="0.01" step="0.01">
+<label>Receipt number (optional)</label><input id="fr" type="text">
+<button class="btn green" onclick="addFuel()">Save Fuel Entry</button>
 </div>
-<div class="card"><h2>Fuel History</h2><div id="fuelList"></div></div>
+<div class="card"><h3>Fuel History</h3><div id="fuels"></div></div>
 </section>
 
-<section id="reports" class="hidden">
+<section id="reports" class="panel">
 <div class="card">
-<h2>Reports</h2>
-<label>From date</label><input id="fromDate" type="date">
-<label>To date</label><input id="toDate" type="date">
-<button class="btn" onclick="showReport()">View Report</button>
-<div class="grid" style="margin-top:14px">
-<div class="stat"><small>Total KM</small><strong id="totalKm">0</strong></div>
-<div class="stat"><small>Work hours</small><strong id="hours">0</strong></div>
-<div class="stat"><small>Fuel cost</small><strong id="cost">QAR 0.00</strong></div>
-<div class="stat"><small>Fuel entries</small><strong id="fuelCount">0</strong></div>
+<h3>Monthly Report</h3>
+<label>Select Month</label><input id="month" type="month">
+<div class="stats" style="margin-top:14px">
+<div class="stat"><small>Total KM</small><strong id="tk">0</strong></div>
+<div class="stat"><small>Work Hours</small><strong id="th">0</strong></div>
+<div class="stat"><small>Fuel Cost QAR</small><strong id="tc">0.00</strong></div>
+<div class="stat"><small>Trips</small><strong id="tn">0</strong></div>
 </div>
-<button class="btn" onclick="printReport('km')">Download Kilometer PDF</button>
-<button class="btn" onclick="printReport('fuel')">Download Fuel PDF</button>
-<p class="muted">Choose dates, view the report, then use the PDF button. In the print screen select “Save as PDF”.</p>
+<button class="btn green" onclick="csv()">Download CSV Report</button>
+<button class="btn gray" onclick="print()">Print / Save PDF</button>
+<p class="muted">CSV is saved to Downloads in the Android app. If opened in a browser, the browser download option is used.</p>
 </div>
-<div class="card"><h2>Selected Report Details</h2><div id="reportList"></div></div>
 </section>
 </main>
+
 <script>
 const $=id=>document.getElementById(id);
-const today=new Date().toLocaleDateString('en-CA');
-const now=()=>{let d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
-let data=JSON.parse(localStorage.getItem('driveData')||'{"details":{},"trips":[],"fuel":[]}');
-function persist(){localStorage.setItem('driveData',JSON.stringify(data))}
-function saveDetails(){
-data.details={driver:$('driver').value.trim(),car:$('car').value.trim(),plate:$('plate').value.trim()};
-persist();alert('Vehicle details saved.');
+const today=()=>{let d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const timeNow=()=>{let d=new Date();return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")};
+const KEY="driverTripLogV2";
+function fresh(){return {trips:[],fuels:[],active:null}}
+function load(){try{let x=JSON.parse(localStorage.getItem(KEY));if(x&&Array.isArray(x.trips)&&Array.isArray(x.fuels))return x}catch(e){}return fresh()}
+let d=load();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(d));return true}catch(e){alert("Storage error. Please check phone storage.");return false}}
+function tab(id,b){document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));$(id).classList.add("active");document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");render()}
+function start(){
+ if(d.active){alert("A trip is already running.");return}
+ let date=$("td").value,k=$("sk").value;
+ if(!date||k===""||!Number.isFinite(Number(k))||Number(k)<0){alert("Enter a valid date and Start KM.");return}
+ d.active={date,startKm:Number(k),startTime:timeNow()};
+ if(save()){ $("sk").value="";render();alert("Trip started.");}
 }
-function loadDetails(){
-$('driver').value=data.details.driver||'';
-$('car').value=data.details.car||'';
-$('plate').value=data.details.plate||'';
+function end(){
+ if(!d.active){alert("Start a trip first.");return}
+ let k=$("ek").value;
+ if(k===""||!Number.isFinite(Number(k))||Number(k)<d.active.startKm){alert("End KM must be at least Start KM.");return}
+ d.trips.push({...d.active,id:Date.now(),endKm:Number(k),endTime:timeNow()});
+ d.active=null;
+ if(save()){$("ek").value="";render();alert("Trip saved.");}
 }
-function saveTrip(){
-let date=$('tripDate').value,start=Number($('startKm').value),end=Number($('endKm').value),st=$('startTime').value,et=$('endTime').value;
-if(!date||$('startKm').value===''||$('endKm').value===''||!st||!et){alert('Please fill in all trip fields.');return}
-if(start<0||end<start){alert('End KM must be equal to or greater than Start KM.');return}
-data.trips.unshift({id:Date.now(),date,start,end,st,et});
-persist();$('startKm').value='';$('endKm').value='';render();alert('Kilometer log saved.');
+function addFuel(){
+ let date=$("fd").value,time=$("ft").value,km=$("fk").value,amt=$("fa").value;
+ if(!date||!time||km===""||amt===""||Number(km)<0||Number(amt)<=0||!Number.isFinite(Number(km))||!Number.isFinite(Number(amt))){alert("Enter valid date, time, KM and amount.");return}
+ d.fuels.push({id:Date.now(),date,time,km:Number(km),amount:Number(amt),receipt:$("fr").value.trim()});
+ if(save()){$("fk").value="";$("fa").value="";$("fr").value="";render();alert("Fuel entry saved.");}
 }
-function saveFuel(){
-let date=$('fuelDate').value,time=$('fuelTime').value,km=$('fuelKm').value,amount=$('fuelAmount').value;
-if(!date||!time||km===''||amount===''||Number(km)<0||Number(amount)<0){alert('Please enter valid fuel details.');return}
-data.fuel.unshift({id:Date.now(),date,time,km:Number(km),amount:Number(amount)});
-persist();$('fuelKm').value='';$('fuelAmount').value='';render();alert('Fuel entry saved.');
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function delTrip(id){if(confirm("Delete this trip?")){d.trips=d.trips.filter(x=>x.id!==id);save();render()}}
+function delFuel(id){if(confirm("Delete this fuel entry?")){d.fuels=d.fuels.filter(x=>x.id!==id);save();render()}}
+function report(){
+ let m=$("month").value||today().slice(0,7);
+ let trips=d.trips.filter(x=>x.date.slice(0,7)===m),fuels=d.fuels.filter(x=>x.date.slice(0,7)===m);
+ let km=trips.reduce((s,x)=>s+x.endKm-x.startKm,0);
+ let cost=fuels.reduce((s,x)=>s+x.amount,0);
+ let mins=trips.reduce((s,x)=>{let a=x.startTime.split(":").map(Number),b=x.endTime.split(":").map(Number),n=b[0]*60+b[1]-a[0]*60-a[1];if(n<0)n+=1440;return s+n},0);
+ return {m,trips,fuels,km,cost,hours:mins/60};
 }
-function dur(t1,t2){let a=t1.split(':').map(Number),b=t2.split(':').map(Number);let n=(b[0]*60+b[1])-(a[0]*60+a[1]);if(n<0)n+=1440;return n}
-function inRange(x){return (! $('fromDate').value||x>=$('fromDate').value)&&(!$('toDate').value||x<=$('toDate').value)}
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function render(){
-$('tripList').innerHTML=data.trips.map(t=>`<div class="entry"><b>${esc(t.date)}</b><br>${t.start} → ${t.end} KM · <b>${t.end-t.start} KM travelled</b><br><span class="muted">${t.st} – ${t.et}</span><br><button class="btn red" onclick="del('trips',${t.id})">Delete</button></div>`).join('')||'<p class="muted">No kilometer logs yet.</p>';
-$('fuelList').innerHTML=data.fuel.map(f=>`<div class="entry"><b>${esc(f.date)} ${esc(f.time)}</b><br>Odometer: ${f.km} KM<br>Amount: QAR ${f.amount.toFixed(2)}<br><button class="btn red" onclick="del('fuel',${f.id})">Delete</button></div>`).join('')||'<p class="muted">No fuel entries yet.</p>';
-showReport();
+ $("status").textContent=d.active?"Trip started: "+d.active.date+" at "+d.active.startTime+" · "+d.active.startKm+" KM":"No active trip.";
+ $("sb").disabled=!!d.active;$("eb").disabled=!d.active;
+ $("trips").innerHTML=d.trips.length?[...d.trips].reverse().map(x=>`<div class="item"><b>${esc(x.date)} · ${x.endKm-x.startKm} KM</b><br>Start: ${x.startKm} KM, ${esc(x.startTime)}<br>End: ${x.endKm} KM, ${esc(x.endTime)}<button class="btn red" onclick="delTrip(${x.id})">Delete</button></div>`).join(""):'<p class="muted">No trips saved yet.</p>';
+ $("fuels").innerHTML=d.fuels.length?[...d.fuels].reverse().map(x=>`<div class="item"><b>${esc(x.date)} · QAR ${x.amount.toFixed(2)}</b><br>${esc(x.time)} · ${x.km} KM<br>Receipt: ${esc(x.receipt||"—")}<button class="btn red" onclick="delFuel(${x.id})">Delete</button></div>`).join(""):'<p class="muted">No fuel entries yet.</p>';
+ let r=report();$("tk").textContent=r.km.toLocaleString();$("th").textContent=r.hours.toFixed(2);$("tc").textContent=r.cost.toFixed(2);$("tn").textContent=r.trips.length;
 }
-function del(type,id){if(confirm('Delete this entry?')){data[type]=data[type].filter(x=>x.id!==id);persist();render()}}
-function showReport(){
-let ts=data.trips.filter(t=>inRange(t.date)),fs=data.fuel.filter(f=>inRange(f.date));
-$('totalKm').textContent=ts.reduce((s,t)=>s+t.end-t.start,0).toLocaleString();
-$('hours').textContent=(ts.reduce((s,t)=>s+dur(t.st,t.et),0)/60).toFixed(1);
-$('cost').textContent='QAR '+fs.reduce((s,f)=>s+f.amount,0).toFixed(2);
-$('fuelCount').textContent=fs.length;
-$('reportList').innerHTML=ts.map(t=>`<div class="entry">${esc(t.date)} · ${t.start}–${t.end} KM · ${t.end-t.start} KM · ${t.st}–${t.et}</div>`).join('')+fs.map(f=>`<div class="entry">${esc(f.date)} ${esc(f.time)} · ${f.km} KM · QAR ${f.amount.toFixed(2)}</div>`).join('')||'<p class="muted">No entries in this date range.</p>';
+function cell(v){let s=String(v??"");if(/^[=+\-@]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'}
+function csv(){
+ let r=report(),rows=[
+ ["Driver Trip Log Report"],["Month",r.m],["Total KM",r.km],["Work Hours",r.hours.toFixed(2)],["Fuel Cost QAR",r.cost.toFixed(2)],[],
+ ["TRIPS"],["Date","Start Time","End Time","Start KM","End KM","Distance KM"],
+ ...r.trips.map(x=>[x.date,x.startTime,x.endTime,x.startKm,x.endKm,x.endKm-x.startKm]),
+ [],["FUEL"],["Date","Time","KM","Amount QAR","Receipt"],
+ ...r.fuels.map(x=>[x.date,x.time,x.km,x.amount.toFixed(2),x.receipt])
+ ];
+ let content="\uFEFF"+rows.map(row=>row.map(cell).join(",")).join("\r\n");
+ let filename="Driver-Trip-Report-"+r.m+".csv";
+ try{
+  if(window.Android&&typeof window.Android.saveCsv==="function"){
+   let bytes=new TextEncoder().encode(content),binary="";
+   for(let i=0;i<bytes.length;i+=8192)binary+=String.fromCharCode(...bytes.subarray(i,i+8192));
+   window.Android.saveCsv(btoa(binary),filename);
+   return;
+  }
+ }catch(e){alert("Android CSV save error: "+e.message);return}
+ let url=URL.createObjectURL(new Blob([content],{type:"text/csv;charset=utf-8"}));
+ let a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),3000);
 }
-function printReport(type){
-showReport();
-let from=$('fromDate').value,to=$('toDate').value;
-let rows=type==='km'?data.trips.filter(t=>inRange(t.date)):data.fuel.filter(f=>inRange(f.date));
-let title=type==='km'?'Kilometer Report':'Fuel Report';
-let body=type==='km'?rows.map(t=>`<tr><td>${esc(t.date)}</td><td>${t.start}</td><td>${t.end}</td><td>${t.end-t.start}</td><td>${esc(t.st)} - ${esc(t.et)}</td></tr>`).join(''):rows.map(f=>`<tr><td>${esc(f.date)}</td><td>${esc(f.time)}</td><td>${f.km}</td><td>QAR ${f.amount.toFixed(2)}</td></tr>`).join('');
-let cols=type==='km'?'<th>Date</th><th>Start KM</th><th>End KM</th><th>Distance</th><th>Time</th>':'<th>Date</th><th>Time</th><th>Odometer KM</th><th>Amount</th>';
-let summary=type==='km'?`Total distance: ${rows.reduce((s,t)=>s+t.end-t.start,0)} KM · Work hours: ${(rows.reduce((s,t)=>s+dur(t.st,t.et),0)/60).toFixed(1)}`:`Total fuel cost: QAR ${rows.reduce((s,f)=>s+f.amount,0).toFixed(2)}`;
-let w=window.open('','_blank');
-if(!w){alert('Allow pop-ups in Chrome, then try again.');return}
-w.document.write(`<!doctype html><html><head><title>${title}</title><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:Arial;padding:22px;color:#172033}h1{color:#142b4a}table{width:100%;border-collapse:collapse;margin-top:20px}td,th{border:1px solid #ccd3dd;padding:8px;text-align:left;font-size:12px}th{background:#edf1f7}.meta{line-height:1.8}@media print{button{display:none}}</style></head><body><h1>Drive — ${title}</h1><div class="meta">Driver: ${esc(data.details.driver||'Not entered')}<br>Vehicle: ${esc(data.details.car||'Not entered')}<br>Plate number: ${esc(data.details.plate||'Not entered')}<br>Date range: ${esc(from||'All dates')} to ${esc(to||'All dates')}<br><b>${summary}</b></div><table><thead><tr>${cols}</tr></thead><tbody>${body||'<tr><td colspan="5">No records for this period.</td></tr>'}</tbody></table><p>Generated by Drive</p><button onclick="window.print()">Print / Save as PDF</button></body></html>`);
-w.document.close();
+function print(){
+ let r=report();
+ let html="<h1>Driver Trip Log</h1><h3>Month: "+esc(r.m)+"</h3><p>Total KM: "+r.km+" | Work hours: "+r.hours.toFixed(2)+" | Fuel QAR: "+r.cost.toFixed(2)+"</p><h2>Trips</h2><table border='1' cellpadding='6'><tr><th>Date</th><th>Start KM</th><th>End KM</th><th>Distance</th></tr>"+r.trips.map(x=>"<tr><td>"+esc(x.date)+"</td><td>"+x.startKm+"</td><td>"+x.endKm+"</td><td>"+(x.endKm-x.startKm)+"</td></tr>").join("")+"</table><h2>Fuel</h2><table border='1' cellpadding='6'><tr><th>Date</th><th>Time</th><th>KM</th><th>QAR</th></tr>"+r.fuels.map(x=>"<tr><td>"+esc(x.date)+"</td><td>"+esc(x.time)+"</td><td>"+x.km+"</td><td>"+x.amount.toFixed(2)+"</td></tr>").join("")+"</table>";
+ let w=window.open("","_blank");if(!w){alert("Print window blocked. Try opening the app in Chrome.");return}
+ w.document.write("<html><head><title>Driver Report</title></head><body style='font-family:Arial;padding:20px'>"+html+"</body></html>");w.document.close();w.print();
 }
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
-document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');
-['km','fuel','reports'].forEach(id=>$(id).classList.toggle('hidden',id!==b.dataset.tab));
-if(b.dataset.tab==='reports')showReport();
-});
-$('tripDate').value=today;$('fuelDate').value=today;$('fuelTime').value=now();
-$('fromDate').value=today.slice(0,7)+'-01';$('toDate').value=today;
-loadDetails();render();
+$("td").value=today();$("fd").value=today();$("ft").value=timeNow();$("month").value=today().slice(0,7);
+render();
 </script>
 </body>
 </html>
