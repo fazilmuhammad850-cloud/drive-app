@@ -3,13 +3,30 @@ name: Build Drive APK
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/build.yml'
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
+      - name: Download repository files
         uses: actions/checkout@v4
+
+      - name: Extract Android project ZIP
+        run: |
+          ZIP_FILE=$(find . -maxdepth 1 -type f -iname '*.zip' | head -n 1)
+          test -n "$ZIP_FILE"
+          mkdir -p /tmp/drive-project
+          unzip -q "$ZIP_FILE" -d /tmp/drive-project
+          cp -R /tmp/drive-project/. .
+          test -f app/build.gradle
+          test -f app/src/main/AndroidManifest.xml
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -17,10 +34,23 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Check project files
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK components
         run: |
-          echo "Repository files:"
-          find . -maxdepth 4 -type f
-          test -f index.html
-          echo "index.html found"
-          
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build APK
+        run: gradle assembleDebug
+
+      - name: Upload Drive APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Drive-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
