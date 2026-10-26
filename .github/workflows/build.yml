@@ -1,0 +1,26 @@
+
+name: Build Drive APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Check project files
+        run: |
+          echo "Repository files:"
+          find . -maxdepth 4 -type f
+          test -f index.html
+          echo "index.html found"
+          
