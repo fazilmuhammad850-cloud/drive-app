@@ -156,11 +156,56 @@ function csv(){
  let a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
  setTimeout(()=>URL.revokeObjectURL(url),3000);
 }
+
 function print(){
  let r=report();
- let html="<h1>Driver Trip Log</h1><h3>Month: "+esc(r.m)+"</h3><p>Total KM: "+r.km+" | Work hours: "+r.hours.toFixed(2)+" | Fuel QAR: "+r.cost.toFixed(2)+"</p><h2>Trips</h2><table border='1' cellpadding='6'><tr><th>Date</th><th>Start KM</th><th>End KM</th><th>Distance</th></tr>"+r.trips.map(x=>"<tr><td>"+esc(x.date)+"</td><td>"+x.startKm+"</td><td>"+x.endKm+"</td><td>"+(x.endKm-x.startKm)+"</td></tr>").join("")+"</table><h2>Fuel</h2><table border='1' cellpadding='6'><tr><th>Date</th><th>Time</th><th>KM</th><th>QAR</th></tr>"+r.fuels.map(x=>"<tr><td>"+esc(x.date)+"</td><td>"+esc(x.time)+"</td><td>"+x.km+"</td><td>"+x.amount.toFixed(2)+"</td></tr>").join("")+"</table>";
- let w=window.open("","_blank");if(!w){alert("Print window blocked. Try opening the app in Chrome.");return}
- w.document.write("<html><head><title>Driver Report</title></head><body style='font-family:Arial;padding:20px'>"+html+"</body></html>");w.document.close();w.print();
+
+ let html=`<!DOCTYPE html>
+ <html>
+ <head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <title>Driver Trip Log Report</title>
+ <style>
+ body{font-family:Arial,sans-serif;padding:16px;color:#172b4d}
+ h1,h2{color:#142b4a}
+ table{width:100%;border-collapse:collapse;margin:12px 0 24px}
+ th,td{border:1px solid #bbb;padding:7px;text-align:left;font-size:12px}
+ th{background:#edf3ff}
+ .summary{padding:12px;background:#edf3ff;margin-bottom:20px}
+ @media print{button{display:none}body{padding:0}}
+ </style>
+ </head>
+ <body>
+ <h1>Driver Trip Log</h1>
+ <h3>Month: ${esc(r.m)}</h3>
+ <div class="summary">
+ Total KM: ${r.km}<br>
+ Work Hours: ${r.hours.toFixed(2)}<br>
+ Fuel Cost: QAR ${r.cost.toFixed(2)}
+ </div>
+ <h2>Kilometer Report</h2>
+ <table>
+ <tr><th>Date</th><th>Start KM</th><th>End KM</th><th>Distance KM</th></tr>
+ ${r.trips.map(x=>`<tr><td>${esc(x.date)}</td><td>${x.startKm}</td><td>${x.endKm}</td><td>${x.endKm-x.startKm}</td></tr>`).join("")}
+ </table>
+ <h2>Fuel Report</h2>
+ <table>
+ <tr><th>Date</th><th>Time</th><th>KM</th><th>QAR</th></tr>
+ ${r.fuels.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.time)}</td><td>${x.km}</td><td>${Number(x.amount).toFixed(2)}</td></tr>`).join("")}
+ </table>
+ <button onclick="window.print()">Print / Save as PDF</button>
+ </body>
+ </html>`;
+
+ try {
+   localStorage.setItem("driverTripPrintReport",html);
+   alert("Report ready. Open this app in Chrome and use Print / Save as PDF.");
+ } catch(e) {
+   alert("Could not prepare report: "+e.message);
+ }
+}
+>Driver Report</title></head><body style='font-family:Arial;padding:20px'>"+html+"</body></html>");w.document.close();w.print();
 }
 $("td").value=today();$("fd").value=today();$("ft").value=timeNow();$("month").value=today().slice(0,7);
 render();
